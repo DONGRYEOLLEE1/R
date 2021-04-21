@@ -91,3 +91,10 @@ tips %>% ggplot(aes(total_bill, tip))+geom_point(aes(col=day, pch=smoker), size=
 tips %>% ggplot(aes(size))+geom_histogram()
 tips %>% ggplot(aes(total_bill, tip))+geom_point()
 tips %>% ggplot(aes(total_bill, tip))+geom_point(size=6)
+
+
+getwd()
+setwd('/workspace/R')
+
+# 변수(Variable)
+x <- 1
