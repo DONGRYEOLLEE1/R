@@ -183,8 +183,7 @@ x</code></pre>
 <h3>연습문제 3-2</h3>
 <p>x=c(1:10)인 벡터에서 짝수 번째 요소만 남긴 x를 만들어라.</p>
 <pre class="r"><code>x &lt;- c(1:10)
-seq(x[2], tail(x,1), by=2)</code></pre>
-<pre><code>## [1]  2  4  6  8 10</code></pre>
+x &lt;- c(seq(x[2], tail(x,1), by=2))</code></pre>
 </div>
 
 
