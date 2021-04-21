@@ -1,0 +1,21 @@
+---
+title: "chapter 3-2 practice"
+author: "LEEDONGRYEOL"
+date: '2021 4 21 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 문제 1
+x=1, y=2를 서로 교환하려고 한다. 나머지 문장을 완성하라.
+```{r}
+x=1
+y=2
+temp=y
+x=y
+x
+y
+```
