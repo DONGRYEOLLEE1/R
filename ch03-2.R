@@ -81,3 +81,24 @@ tail(x,1)
 seq(from = 2, to = 10, by = 2)
 x[x%%2==0]
 seq(from = x[2], to = tail(x,1), by=2)
+seq(x[2], tail(x,1), by=2)
+head(x,2)
+head(x,-2)
+head(x,-1)
+head(x,3
+head(x,3)     
+head(x)
+head(x,1)
+head(x,2)
+seq(x[2], tail(x,1), by=2)
+
+
+
+x <- c(1:5)
+x <- c(1:5, 6:10)
+x
+
+
+x <- c(1:10)
+seq(x[2], tail(x,1), by=2)
+x <- c(seq(x[2], tail(x,1), by=2))
