@@ -44,15 +44,16 @@ library("ggplot2")
 ggplot(gapminder, aes(x=gdpPercap, y=lifeExp, col=continent)) + 
     geom_point() + 
     scale_x_log10()
-
+ggplot(gapminder, aes(gdpPercap, lifeExp, col=continent)) + 
 
 # 인구수에 따라 포인트 코기 조절
 ggplot(gapminder, aes(x=gdpPercap, y=lifeExp, 
                       col=continent, size=pop)) + 
     geom_point() + 
     scale_x_log10()
-
-
+ggplot(iris, aes(x=mean(setosa_sep$set_sep), y=Species, col=Species)) + 
+    geom_bar(stat='identity')
+mean
 # 포인트의 투명도 조절
 ggplot(gapminder, aes(x=gdpPercap, y=lifeExp, 
                       col=continent, size=pop)) + 
@@ -77,6 +78,11 @@ ggplot(gapminder, aes(x=gdpPercap, y=lifeExp,
 
 # 시각화 기본기능
 # 1. 비교/순위
+iris %>% 
+    filter(Species=="setosa") %>% 
+    ggplot(aes(Sepal.Length, Sepal.Width)) + 
+    geom_bar(stat='identity') + 
+    coord_flip()
 gapminder %>% 
     filter(continent=="Asia" & year==1952) %>% 
     ggplot(aes(reorder(country, pop), pop)) + 
