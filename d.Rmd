@@ -1,0 +1,42 @@
+---
+title: "Untitled"
+author: "LEEDONGRYEOL"
+date: '2021 4 29 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 문제 1
+
+```{r}
+library(dplyr)
+library(HistData)
+GaltonFamilies <-  GaltonFamilies %>% 
+    mutate(father = 2.54*father, 
+           childHeight = 2.54*childHeight)
+
+son <- GaltonFamilies %>% 
+    filter(gender=="male") %>% 
+    group_by(childHeight)
+son_height <- subset(son, select=c(father, childHeight))
+fat_son <- lm(childHeight ~ father, data=son_height)
+plot(son_height, xlab="Father", ylab="Son") + 
+    abline(lm(childHeight ~ father, data=son_height), col='red')
+
+fat_son2 <- lm(childHeight ~ poly(father, 2), data=son_height)
+
+x <- seq(155, 200, length.out=1000)
+y <- predict(fat_son2, data.frame(father=x))
+lines(x, y, col='blue', lwd=2)
+
+coef(fat_son2)
+```
+
+
+아버지의 키가 상대적으로 크면 아들인 자식의 키가 아버지보다 작고,
+아버지의 키가 상대적으로 작으면 아들인 자식의 키는 아버지보다 크다.
+son_height = 0.4465 * father_height + 97.4410
+son_height = -0.0207 * father_height^2 + 57.2945 * father_height + 175.8546
