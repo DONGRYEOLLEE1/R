@@ -121,3 +121,18 @@ summary(resamp)
 
 sort(resamp, decreasing=T)
 dotplot(resamp)
+
+
+# 4.
+str(kyphosis)
+
+set.seed(2021)
+train_index <- createDataPartition(kyphosis$Kyphosis, p=0.6, list=F)
+ky_train <- kyphosis[train_index, ]
+ky_test <- kyphosis[-train_index, ]
+table(ky_train$Kyphosis)
+table(ky_test$Kyphosis)
+
+# 디시젼 트리
+dt <- rpart(Kyphosis ~ ., ky_train)
+dt_pred <- predict(dt, ky_test, type='class')

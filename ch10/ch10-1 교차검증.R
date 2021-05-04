@@ -19,7 +19,7 @@ for(i in 1:k) {
     pred <- predict(rf, data_test)
     t <- table(pred, data_test$Species)
     acc <- acc + (t[1,1] + t[2,2] + t[3,3])/nrow(data_test)
-}
+} 
 
 average_accuracy <- acc/k
 average_accuracy
