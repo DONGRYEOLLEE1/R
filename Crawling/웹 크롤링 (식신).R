@@ -26,20 +26,6 @@ title
 detail <- li %>% html_node('p') %>% html_text()
 detail
 
-####  title , detail
-title_vec <- c()
-detail_vec <- c()
-for (li in lis) {
-    
-    title <- li %>% html_node('.box_tit') %>% html_text()
-    detail <- li %>% html_node('p') %>% html_text()
-    title_vec <- c(title_vec, title)
-    detail_vec <- c(detail_vec, detail)
-}
-new_food <- data.frame(title=title_vec, detail=detail_vec)
-View(new_food)
-
-
 # 세부내용 크롤링 (주소 , 전화번호)
 li <- lis[1]
 href <- li %>% html_node('.cont') %>% html_node('a') %>% html_attr('href')
