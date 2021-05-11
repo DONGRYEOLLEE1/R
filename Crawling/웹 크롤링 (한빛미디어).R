@@ -1,32 +1,29 @@
-# 한빛 25 페이지 까지 
+# 한빛미디어 사이트 - 책 모든 페이지지 웹 크롤링 
 library(rvest)
 library(stringr)
 library(dplyr)
-
-basic_url <- 'https://www.hanbit.co.kr/media/books'
-sub_url <- 'new_book_list.html?page='
-url <- paste(basic_url, sub_url, sep = '/')
-urls <- c()
-
-for (i in 1:25) {
-    urls[i+1] <- paste0(url, i)
-}
-
-html <- read_html(urls[2])
-container <- html_node(html, '#container')
-book_list <- html_node(container, '.new_book_list_wrap')
-sub_book_list <- html_node(book_list, '.sub_book_list_area')
-lis <- html_nodes(sub_book_list, 'li')
-
-
 
 title_vector <- c()
 writer_vector <- c()
 page_vector <- c()
 price_vector <- c()
 
-for (i in 2:25) {
-    urls[i+1] <- paste0(basic_url, i)
+base_url <- 'https://www.hanbit.co.kr/media/books'
+sub_url <- '/new_book_list.html'
+# query <- sprintf('?page=%d&cate_cd=&srt=&searchKey=&keyWord=', 1)
+# url <- paste0(base_url, sub_url, query)
+# html <- read_html(url)
+for (page in c(1:25)) {
+    print(page)
+    query <- sprintf('?page=%d&cate_cd=&srt=&searchKey=&keyWord=', page)
+    url <- paste0(base_url, sub_url, query)
+    html <- read_html(url)
+    
+    container <- html_node(html, '#container')  
+    book_list <- html_node(container, '.new_book_list_wrap')  
+    sub_book_list <- html_node(book_list, '.sub_book_list_area')
+    lis <- html_nodes(sub_book_list, 'li')      
+    
     for (li in lis) {
         info <- html_node(li, '.info')
         title <- info %>% 
@@ -39,7 +36,7 @@ for (i in 2:25) {
             html_node('.info') %>% 
             html_node('a') %>% 
             html_attr('href')
-        book_url <- paste(basic_url, href, sep='/')
+        book_url <- paste(base_url, href, sep='/')
         book_html <- read_html(book_url)
         info_list <- html_node(book_html, 'ul.info_list')
         book_lis <- html_nodes(info_list, 'li')
@@ -58,12 +55,16 @@ for (i in 2:25) {
         }
         pay_info <- html_node(book_html, '.payment_box.curr')
         ps <- html_nodes(pay_info, 'p')
-        price <- ps[2] %>% 
-            html_node('.pbr') %>% 
-            html_node('strong') %>% 
-            html_text()
-        price <- as.integer(gsub(',','',price))
-        
+        if (length(ps) == 0) {
+            price <- 0
+        } else {
+            price <- ps[2] %>% 
+                html_node('.pbr') %>% 
+                html_node('strong') %>% 
+                html_text()
+            price <- as.integer(gsub(',','',price))
+        }
+
         title_vector <- c(title_vector, title)
         writer_vector <- c(writer_vector, writer)
         page_vector <- c(page_vector, page)
@@ -71,18 +72,20 @@ for (i in 2:25) {
     }
 }
 
-new_books <- data.frame(title=title_vector, writer=writer_vector, page=page_vector, price=price_vector)
+new_books <- data.frame(
+    title=title_vector,
+    writer=writer_vector,
+    page=page_vector,
+    price=price_vector)
 View(new_books)
 
+# 파일에 저장
+write.csv(new_books, 'data/한빛도서.csv', fileEncoding = 'utf-8', row.names=F)
+df <- read.csv('data/한빛도서.csv', fileEncoding = 'utf-8')
+View(df)
 
-# 지니뮤직 전일차트 1~100위 (Rank, Last_rank, Title, Aritst, Album)
-library(rvest)
-library(httr)
-library(stringr)
-library(dplyr)
-url_1 <- 'https://www.genie.co.kr/chart/top200?ditc=D&ymd=20210510&hh=17&rtm=Y&pg=1'
-url_2 <- 'https://www.genie.co.kr/chart/top200?ditc=D&ymd=20210510&hh=17&rtm=Y&pg=2'
 
-html <- read_html(url_1)
-# 전주 순위  유지, 상승, 하강 (1, 3, 4)
 
+
+
+###########################
