@@ -6,40 +6,85 @@ library(e1071)
 library(randomForest)
 library(dplyr)
 library(ggplot2)
+library(rpart.plot)
 
 getwd()
-stat <- read.csv('data/Seasons_Stats_NEW1.csv')
+setwd('c:/workspace/R')
+stat <- read.csv('data/Seasons_Stats_Last.csv')
 mvp <- read.csv('data/MVP.csv')
 
 stat <- stat %>% filter(Year>=2000)
-stat1 <- stat %>% select(G, MP, PT, TRB, AST, STL, FG., X3P., FT., MVP)
+stat_raw <- na.omit(stat)
+stat1 <- stat_raw %>% select(G,MP, PT, FG.,X3P.,FT., MVP) 
+# 후진제거법으로 관련성 있는 종속변수를 도출해냄
 stat_not_mvp <- stat1 %>% filter(MVP==0)
-mvp <- mvp %>% filter(Year>=2000)
-mvp1 <- mvp %>% select(G, MP, PT, TRB, AST, STL, FG., X3P., FT., MVP)
-mvp2 <- as.data.frame(mvp1)
 
-stat1$MVP <- factor(stat1$MVP)
 
-a <- stat_not_mvp[sample(nrow(stat_not_mvp), 150), ]
-b <- mvp2[sample(nrow(mvp2), 15), ]
-c <- stat_not_mvp[sample(nrow(stat_not_mvp), 50), ]
-d <- mvp2[sample(nrow(mvp2), 5), ]
+mvp1 <- mvp %>% filter(Year >=1980 & Year <=2010)
+mvp1 <- mvp1 %>% select(G,MP, PT, FG.,X3P.,FT., MVP)
+mvp2 <- mvp %>% filter(Year >=2011)
+mvp2 <- mvp2 %>% select(G,MP, PT, FG.,X3P.,FT., MVP)
+
+
+
+mvp1 <- as.data.frame(mvp1)
+mvp2 <- as.data.frame(mvp2)
+
+stat1$MVP <- as.factor(stat1$MVP)
+mvp1$MVP <- as.factor(mvp1$MVP)
+mvp2$MVP <- as.factor(mvp2$MVP)
+
+a <- stat_not_mvp[sample(nrow(stat_not_mvp), 310), ]
+b <- mvp1[sample(nrow(mvp1), 31), ]
+c <- stat_not_mvp[sample(nrow(stat_not_mvp), 100), ]
+d <- mvp2[sample(nrow(mvp2), 10), ]
 
 train_1 <- rbind(a, b)
 test_1 <- rbind(c, d)
 
+train_1$PT <- as.numeric(train_1$PT)
+train_1$MVP <- as.factor(train_1$MVP)
+test_1$MVP <- as.factor(test_1$MVP)
+str(train_1)
 
-set.seed(30000)
-train_index <- createDataPartition(stat_not_mvp$MVP, p=0.8, list=F)
-stat1_train <- stat1[train_index, ]
-stat1_test <- stat1[-train_index, ]
-
+# DT
 dtc <- rpart(MVP ~ ., train_1)
 summary(dtc)
-pred <- predict(dtc, test_1, type='class')
-confusionMatrix(pred, test_1$MVP)
+dtc
+dtc_pred <- predict(dtc, test_1, type='class')
+table(dtc_pred, test_1$MVP)
+confusionMatrix(dtc_pred, test_1$MVP)
+plot(dtc)
+text(dtc, use.n=T)
+rpart.plot(dtc, type=4)
+
+# RF
+rf <- randomForest(MVP ~ ., train_1)
+rf_pred <- predict(rf, test_1, type='class')
+table(rf_pred, test_1$MVP)
+confusionMatrix(rf_pred, test_1$MVP)
+plot(rf)
+
+# SVM
+sv <- svm(MVP ~ ., train_1)
+sv_pred <- predict(sv, test_1, type='class')
+table(sv_pred, test_1$MVP)
+confusionMatrix(sv_pred, test_1$MVP)
+plot(sv)
+
+# GLM
+m <- glm(MVP ~ ., train_1, family = 'binomial')
+summary(m)
+coef(m)
 
 
-# stat1
-pred <- predict(dtc, stat1, type='class')
-confusionMatrix(pred, stat1$MVP)
+m <- glm(MVP ~ ., train_1, family = 'binomial')
+step(m, direction='backward')
+
+
+CS <- read.csv('data/2021Player.csv')
+cs <- CS %>% select(G,MP, PT, FG.,X3P.,FT., MVP)
+cs$MVP <- as.factor(cs$MVP)
+pred_cs <- predict(dtc, cs, type='class')
+table(pred_cs, cs$MVP)
+confusionMatrix(pred_cs, cs$MVP)
