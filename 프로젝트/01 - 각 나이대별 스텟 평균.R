@@ -1,9 +1,10 @@
 library(dplyr)
 library(ggplot2)
-library(gtable)
 library(grid)
 library(gridExtra)
 library(gtable)
+
+
 
 getwd()
 stat <- read.csv('data/Seasons_Stats_Last.csv')

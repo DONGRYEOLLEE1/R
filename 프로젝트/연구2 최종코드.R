@@ -1,10 +1,10 @@
 library(dplyr)
 library(caret)
 library(e1071)
-library(caret)
 library(randomForest)
 library(rpart)
 library(rpart.plot)
+library(ggplot2)
 
 mvp <- read.csv("C:/workspace/R/data/MVP.csv")
 mvp_1 <- mvp %>% na.omit() %>% filter(Year <= 2010) %>% 
@@ -13,7 +13,7 @@ mvp_2 <- mvp %>% na.omit() %>% filter(Year >= 2011) %>%
     select(G, MP, PT, TRB, AST, STL, FG., X3P., FT.,MVP) %>% as.data.frame()
 
 mvp_1$MVP <- as.factor(mvp_1$MVP)
-mvp_2$MVP <- as.factor(mvp_2$MVP)
+mvp_2$MVP <- as.factor(mvp_2$MVP)S
 str(mvp_1)
 # mvp가 아닌 행들만 추출, y값 MVP 열은 범주화.
 
@@ -53,6 +53,9 @@ st_2021 <- as.data.frame(st_2021)
 # 디시젼트리로 2021 MVP 예측.
 pred_dt_2021 <- predict(dtc, st_2021, type = 'class')
 summary(pred_dt_2021)
+
+target_dt = pred_dt_2021[pred_dt_2021 == 1] %>% names()
+st_2021 %>% filter(rownames(st_2021) %in% target_dt) %>% select(Player)
 
 ############################################################################################
 # 랜덤 포레스트
