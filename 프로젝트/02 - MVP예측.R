@@ -16,7 +16,6 @@ mvp <- read.csv('data/MVP.csv')
 stat <- stat %>% filter(Year>=2000)
 stat_raw <- na.omit(stat)
 stat1 <- stat_raw %>% select(G,MP, PT, FG.,X3P.,FT., MVP) 
-# 후진제거법으로 관련성 있는 종속변수를 도출해냄
 stat_not_mvp <- stat1 %>% filter(MVP==0)
 
 
@@ -49,11 +48,10 @@ str(train_1)
 
 # DT
 dtc <- rpart(MVP ~ ., train_1)
-summary(dtc)
-dtc
 dtc_pred <- predict(dtc, test_1, type='class')
 table(dtc_pred, test_1$MVP)
 confusionMatrix(dtc_pred, test_1$MVP)
+
 plot(dtc)
 text(dtc, use.n=T)
 rpart.plot(dtc, type=4)
@@ -63,28 +61,32 @@ rf <- randomForest(MVP ~ ., train_1)
 rf_pred <- predict(rf, test_1, type='class')
 table(rf_pred, test_1$MVP)
 confusionMatrix(rf_pred, test_1$MVP)
-plot(rf)
 
 # SVM
 sv <- svm(MVP ~ ., train_1)
 sv_pred <- predict(sv, test_1, type='class')
 table(sv_pred, test_1$MVP)
 confusionMatrix(sv_pred, test_1$MVP)
-plot(sv)
 
 # GLM
 m <- glm(MVP ~ ., train_1, family = 'binomial')
 summary(m)
 coef(m)
 
-
-m <- glm(MVP ~ ., train_1, family = 'binomial')
+# 후진제거법으로 의미없는 변수 없애기
 step(m, direction='backward')
 
-
+## 2021년 예측
 CS <- read.csv('data/2021Player.csv')
 cs <- CS %>% select(G,MP, PT, FG.,X3P.,FT., MVP)
+cs <- na.omit(cs)
 cs$MVP <- as.factor(cs$MVP)
+
 pred_cs <- predict(dtc, cs, type='class')
 table(pred_cs, cs$MVP)
 confusionMatrix(pred_cs, cs$MVP)
+pred_cs <- as.data.frame(pred_cs)
+
+
+target = rf_pred[rf_pred == 1] %>% names()
+test_1 %>% filter(rownames(test_1) %in% target) %>% select(Player)
