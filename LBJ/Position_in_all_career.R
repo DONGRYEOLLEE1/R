@@ -10,3 +10,5 @@ ggplot(AND1, aes(x=Age, y=And1, col=Pos)) + geom_line(size = 1) + geom_point(siz
     ggtitle('LBJ position in all career') +
     theme(plot.title=element_text(size=20, color="#008080"))
 
+
+PO2021 <- read.csv('data/2021Playoff.csv')
